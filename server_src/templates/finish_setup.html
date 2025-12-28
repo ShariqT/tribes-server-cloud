@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    >
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Wizard-JS@2.0.3/dist/main.min.css">
+
+    <script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Wizard-JS@2.0.3/dist/index.js"></script>
+    <title>Welcome To Your Tribes Server</title>
+   
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+
+        <div class="column">
+          <p style="text-align: center;" class="mb-6">Use the login that was displayed in the container startup logs.</p>
+          <form class="wizard" method="POST" action="/admin_process">
+              <aside class="wizard-content container">
+                  <div class="wizard-step" data-wz-title="Admin Key Configuration">
+                    <h4 class="is-size-4">You will login to your server using your public key. This is how you will login to server.</h4>
+                    <div class="field">
+                      <label class="label">Paste your public key here</label>
+                      <div class="control">
+                        <textarea class="textarea" name="pgpkey" id="pgpkey" placeholder="Enter your PGP Key..." required></textarea>
+                      </div>
+                      <p class="help is-danger" id="help1"></p>
+                    </div>
+                  </div>
+                  <div class="wizard-step" data-wz-title="Create Server Keys">
+                    <h3 class="is-size-4">Enter a username and email address for this server</h3>
+                    <div class="field">
+                      <label class="label">Server username</label>
+                      <div class="control">
+                        <input type="text" name="s_username" id="s_username" class="input" placeholder="Server username" required />
+                      </div>
+                      <p class="help is-danger" id="help2"></p>
+                    </div>
+                    <div class="field">
+                      <label class="label">Server email (no emails will actually be sent to the server)</label>
+                      <div class="control">
+                        <input type="text" name="s_email" id="s_email" class="input" placeholder="Server email" required />
+                      </div>
+                      <p class="help is-danger" id="help3"></p>
+                    </div>
+                  </div>
+                  <!-- More steps -->
+              </aside>
+          </form>
+        </div>
+      </div> 
+    </div>
+     <script>
+      let args = {
+          "wz_class": ".wizard",
+          "wz_nav_style": "dots",
+          "wz_button_style": ".button .is-primary",
+          "wz_ori": "horizontal",
+          "buttons": true,
+          "navigation": 'buttons',
+          "finish": "Save!"
+      };
+
+      const wizard = new Wizard(args);
+
+      wizard.init();
+
+      let $wz_doc = document.querySelector(args.wz_class)
+      $wz_doc.addEventListener('wz.form.submit', function(e){
+        console.log(e)
+        e.target.submit()
+      })
+      $wz_doc.addEventListener('wz.error', function(e){
+        console.log(e.target[0].id)
+        console.log(e)
+        switch(e.target[0].id) {
+          case "pgpkey":
+            $help = document.getElementById('help1')
+            $help.innerText = e.detail.msg
+            break;
+        }
+      })
+    </script>
+  </body>
+</html>

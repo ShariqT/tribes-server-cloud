@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    >
+  <title>Welcome To Your Tribes Server</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+
+        <div class="column">
+          <p style="text-align: center;">Use the login that was displayed in the container startup logs.</p>
+          <form action="/admin_setup" method="post">
+              <div class="field">
+                <label class="label">Username</label>
+                <div class="control">
+                  <input class="input" type="text" name="setup_name" placeholder="Username" />
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Password</label>
+                <div class="control">
+                  <input class="input" type="password" name="setup_pw" placeholder="Password" />
+                </div>
+              </div>
+              <input type="hidden" name="1sttime" value="True" />
+              <button class="button primary" type="submit">Login</button>
+          </form>
+        </div>
+      </div> 
+    </div>
+  </body>
+</html>
