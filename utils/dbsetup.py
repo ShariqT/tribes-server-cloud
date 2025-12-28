@@ -25,7 +25,7 @@ def firststep():
   ping()
   password = base64.urlsafe_b64encode(bytes(generate_name(), "utf8"))
   password = password.decode("utf8")
-  r.set("firstpw", "password")
+  r.set("firstpw", password)
   r.close()
   sys.stdout.write(f"Your administrator account login is admin and the password is {password}. Go to https://<yourdomain>/supmod")
 
