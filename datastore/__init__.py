@@ -154,7 +154,7 @@ def get_admin_publickey():
     publickey = r.get("superuser")
     return garden.create_key_from_text(publickey)
   except:
-    raise Exception("Couldd not get ")
+    raise Exception("Could not get the admin key")
 
 
 def add_member(member_public_key):

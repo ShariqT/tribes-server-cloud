@@ -10,7 +10,7 @@ import datastore
 from datastore import messages
 from dotenv import load_dotenv
 import os
-from utils.dbsetup import setup, firststep
+from utils.dbsetup import setup, firststep, check_key
 load_dotenv()
 
 parser = argparse.ArgumentParser(prog="Tribes", description="Tribes Server Admin")
@@ -37,7 +37,6 @@ if args.run_server is True:
   from waitress import serve
   from server_src import app
   os.environ['MODE'] = 'PROD'
-  firststep()
   print(f"Running production server on port {os.environ['PORT']}")
   serve(app, host='0.0.0.0', port=os.environ['PORT'])
 

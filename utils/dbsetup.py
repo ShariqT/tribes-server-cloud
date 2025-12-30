@@ -1,6 +1,7 @@
 import redis
 import datastore
 from datastore import messages
+from datastore import access
 import json, base64, os, sys
 from names_generator import generate_name
 
@@ -44,9 +45,35 @@ def setup():
   datastore.create_people_index("moderators")
   datastore.create_people_index("blocked")
   messages.create_message_index()
+  access.create_request_access_index()
   r.close()
 
 def remove_firstpw():
   r.delete("firstpw")
   r.set("setup_complete", 1)
   r.close()
+
+
+def get_mod_login_count():
+  num = int(r.get("mod_login_count"))
+  print(num)
+  r.close()
+  return num
+
+def get_active_login_codes():
+  codes = r.lrange("active_auth_codes", 0, -1)
+  r.close()
+  return codes
+
+def remove_code_from_login_codes(code):
+  r.lrem("active_auth_codes", 0, code)
+  r.close()
+
+def push_new_login_code(code):
+  r.rpush("active_auth_codes", code)
+  r.close()
+
+def push_mod_login_count(current_mod_login_count):
+  r.set("mod_login_count", current_mod_login_count)
+  r.close()
+

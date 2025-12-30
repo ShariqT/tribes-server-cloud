@@ -93,50 +93,54 @@ def process_admin():
 @app.route("/supmod", methods=['GET', 'POST'])
 def login_moderator():
   if request.method == 'GET':
+    if utils.check_key("firstpw") == 1:
+      return redirect("/admin_setup")
     return render_template("mod_login.html")
 
   if request.method == 'POST':
-    if request.form['skip'] == "True" and os.environ['MODE'] == 'DEBUG':
-      return render_template("mod_response.html", message="12345")
+    # if request.form['skip'] == "True" and os.environ['MODE'] == 'DEBUG':
+    #   return render_template("mod_response.html", message="12345")
     session.pop('mod_number', None)
     pubkey = garden.create_key_from_text(request.form['pubkey'].strip())
-    superuser_key = garden.create_key_from_text(r.get("superuser").decode().strip())
+    superuser_key = datastore.get_admin_publickey()
 
     if pubkey.fingerprint != superuser_key.fingerprint:
       message = "The public key you posted isn't a moderator. Go back and post your key again or contact the server admin."
       return render_template("mod_error.html", error=message)
-
-    mod_login_count = int(r.get("mod_login_count"))
+    
+    mod_login_count = dbsetup.get_mod_login_count()
     current_mod_login_count = mod_login_count + 1
+    print(current_mod_login_count)
     current_otp = hotp.at(current_mod_login_count)
     message = f"Copy everyting after the colon. Your code is: {current_otp}"
     encrypted_message = garden.encrypt_message(message, pubkey)
-    r.rpush("active_auth_codes", str(current_otp) + "/" + str(current_mod_login_count) )
-    r.set("mod_login_count", current_mod_login_count)
+    new_active_code = str(current_otp) + "/" + str(current_mod_login_count)
+    dbsetup.push_new_login_code(new_active_code)
+    dbsetup.push_mod_login_count(current_mod_login_count)
     session['mod_number'] = current_mod_login_count
-    return render_template("mod_response.html", message=encrypted_message)
+    return render_template("mod_response.html", message=str(encrypted_message))
 
 
 @app.route('/supmod_response', methods=['POST'])
 def code_response():
   approved = False
 
-  if request.form['password'] == "12345" and os.environ['MODE'] == 'DEBUG':
-    approved = True
-    session['is_mod'] = True
-    return redirect("/dashboard")
+  # if request.form['password'] == "12345" and os.environ['MODE'] == 'DEBUG':
+  #   approved = True
+  #   session['is_mod'] = True
+  #   return redirect("/dashboard")
   
   password = request.form['password'] + "/" + str(session['mod_number'])
-  codes = r.lrange("active_auth_codes", 0, -1)
+  codes = dbsetup.get_active_login_codes()
   for code in codes:
-    if code.decode() == password:
+    if code == password:
       approved = True
   
   if approved is False:
     for code in codes:
-      code_split = code.decode().split("/")
+      code_split = code.split("/")
       if code_split[1] == str(session['mod_number']):
-        r.lrem("active_auth_codes", 0, code)
+        dbsetup.remove_code_from_login_codes(code)
     return render_template("mod_error.html", error="Password is incorrect. Try again.")
 
   if approved is True:
@@ -281,7 +285,7 @@ def send_message_to_mods():
   
     return render_template("moderator_message.html", data=data)
   except Exception as e:
-    return render_template("moderator_message.html", error=str(e), data=data)
+    return render_template("moderator_message.html", error=str(e), data={ "mods": []})
 
 
 @app.route("/member")
