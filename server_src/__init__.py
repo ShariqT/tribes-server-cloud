@@ -56,6 +56,11 @@ def first_time_screen():
 @app.route("/admin_process", methods=['POST'])
 def process_admin():
   try:
+    utils.set_welcome_message(request.form['welcome'])
+  except Exception as e:
+    sys.stderr.write(f"Error saving welcome message: {str(e)}")
+    return render_template("mod_error.html", error="Could not save welcome message!", backTo="/admin_setup")
+  try:
     # create server keypair
     keypath = "/var/keys"
     if os.environ['MODE'] == 'DEBUG':
@@ -100,6 +105,7 @@ def login_moderator():
   if request.method == 'POST':
     if request.form['skip'] == "True" and os.environ['MODE'] == 'DEBUG':
       return render_template("mod_response.html", message="12345")
+      
     session.pop('mod_number', None)
     pubkey = garden.create_key_from_text(request.form['pubkey'].strip())
     superuser_key = datastore.get_admin_publickey()
@@ -110,7 +116,6 @@ def login_moderator():
     
     mod_login_count = dbsetup.get_mod_login_count()
     current_mod_login_count = mod_login_count + 1
-    print(current_mod_login_count)
     current_otp = hotp.at(current_mod_login_count)
     message = f"Copy everyting after the colon. Your code is: {current_otp}"
     encrypted_message = garden.encrypt_message(message, pubkey)
@@ -176,10 +181,6 @@ def moderator_add():
     except Exception as e:
       return render_template("moderator_add.html", error=str(e))
 
-
-    # moderator_info = {"key": str(new_mod_key), "username": garden.generate_key_name_id(new_mod_key)}
-    # r.rpush("moderators", json.dumps(moderator_info) )
-    # return render_template("moderator_add.html", success="New moderator added! They can now login to the server using their public key.")
   return render_template("moderator_add.html")
 
 def create_server_message(message_text, selected_mod, admin_username, server_publickey, admin_key):
@@ -214,6 +215,22 @@ def moderator_delete():
   
   return render_template("moderator_delete.html")
 
+@app.route("/welcome", methods=["GET", "POST"])
+def welcome_message_edit():
+  if request.method == "GET":
+    try:
+      current_welcome_message = utils.read_welcome_message(from_file=True)
+      return render_template("welcome_message_form.html", current_message=current_welcome_message)
+    except Exception as e:
+      return render_template("welcome_message_form.html", error="Could not get welcome message: " + str(e))
+
+  if request.method == "POST":
+    try:
+      utils.set_welcome_message(request.form['text'])
+      current_welcome_message = utils.read_welcome_message(from_file=True)
+      return render_template("welcome_message_form.html", success="Welcome message changed!", current_message=current_welcome_message)
+    except Exception as e:
+      return render_template("welcome_message_form.html", error="Could not set new welcome message: " + str(e))
 
 @app.route("/modmessage")
 def server_message_page():
@@ -236,9 +253,7 @@ def read_message_by_id(message_id):
     server_privatekey_filedata = server_privatekey_file.read()
     server_privatekey = garden.create_key_from_text(server_privatekey_filedata)
     selected_message = server_messages.get_message_by_id(message_id)
-    print(selected_message)
     selected_message.decrypt_message(server_privatekey)
-    print(f"the message is: {selected_message.message_plaintext}")
     selected_message.is_read = 1
     selected_message.save_message()
     return render_template("inbox_message.html", message=selected_message)
@@ -252,9 +267,7 @@ def send_message_to_mods():
     all_mods = datastore.view_moderators()
     admin_key = datastore.get_admin_publickey()
     path = utils.get_keyfile_directory()
-    print(path)
     server_publickey_file = open(os.path.join(path, "pub.key"))
-    print(server_publickey_file)
     server_publickey_filedata = server_publickey_file.read()
     server_publickey = garden.create_key_from_text(server_publickey_filedata)
     data = {
@@ -310,10 +323,6 @@ def member_add():
     except Exception as e:
       return render_template("member_add.html", error=str(e))
 
-
-    # moderator_info = {"key": str(new_mod_key), "username": garden.generate_key_name_id(new_mod_key)}
-    # r.rpush("moderators", json.dumps(moderator_info) )
-    # return render_template("moderator_add.html", success="New moderator added! They can now login to the server using their public key.")
   return render_template("member_add.html")
 
 @app.route("/member/block", methods=["GET", "POST"])

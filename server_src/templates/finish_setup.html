@@ -46,13 +46,31 @@
                       <p class="help is-danger" id="help3"></p>
                     </div>
                   </div>
-                  <!-- More steps -->
+                   <div class="wizard-step" data-wz-title="Add Welcome Message">
+                    <h3 class="is-size-4">Enter a welcome message using Markdown. If you are unfamiliar with Markdown, you can get a short intro by clicking <a href="" id="mdhelp">this link.</a></h3>
+                    <div class="field">
+                      <label class="label">Server welcome message</label>
+                      <div class="control">
+                        <textarea class="textarea" name="welcome" id="welcome" placeholder="Enter the welcome message..." required></textarea>
+                      </div>
+                      <p class="help is-danger" id="help4"></p>
+                    </div>
+                  </div>
               </aside>
           </form>
         </div>
       </div> 
     </div>
      <script>
+      $mdlink = document.getElementById("mdhelp")
+      $mdlink.addEventListener('click', function(evt){
+        evt.preventDefault();
+        left = window.outerWidth;
+        width = 400;
+        leftpx = left - width;
+        
+        window.open("https://www.google.com", '', `width=${width},height=800,resizable=yes,left=${leftpx}px`)
+      })
       let args = {
           "wz_class": ".wizard",
           "wz_nav_style": "dots",
@@ -69,17 +87,28 @@
 
       let $wz_doc = document.querySelector(args.wz_class)
       $wz_doc.addEventListener('wz.form.submit', function(e){
-        console.log(e)
         e.target.submit()
       })
       $wz_doc.addEventListener('wz.error', function(e){
-        console.log(e.target[0].id)
-        console.log(e)
-        switch(e.target[0].id) {
-          case "pgpkey":
-            $help = document.getElementById('help1')
-            $help.innerText = e.detail.msg
-            break;
+        for (target of e.detail.target){
+          switch(target.id) {
+            case "pgpkey":
+              $help = document.getElementById('help1')
+              $help.innerText = e.detail.msg
+              break;
+            case "s_username":
+              $help = document.getElementById('help2')
+              $help.innerText = e.detail.msg
+              break;
+            case "s_email":
+              $help = document.getElementById('help3')
+              $help.innerText = e.detail.msg
+              break;
+            case "welcome":
+              $help = document.getElementById('help4')
+              $help.innerText = e.detail.msg
+              break;
+          }
         }
       })
     </script>

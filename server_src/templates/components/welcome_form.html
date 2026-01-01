@@ -1,0 +1,25 @@
+{% if error is defined %}
+        <div class="notification is-danger">
+          
+          {{ error }}
+        </div>
+      {% endif %}
+      {% if success is defined %}
+        <div class="notification is-success">
+          
+          {{success}}
+        </div>
+{% endif %}
+<!-- <div class="notification is-info">
+  This message will go out to all of the server's moderators1!
+</div> -->
+<form action="/welcome" method="POST">
+  <div class="field">
+    <label class="label">
+      Enter your server's welcome message
+    </label>
+    <textarea class="textarea" name="text" width="100%" rows="10">{{current_message}}</textarea>
+  </div>
+  <button type="submit" class="button is-fullwidth is-primary">Send</button>
+
+</form>

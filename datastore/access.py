@@ -26,8 +26,10 @@ def create_request_access_index():
       )
     )
     r.close()
-  except:
-    raise Exception(f"Could not create request access index")
+  except Exception as e:
+    if str(e) == 'Index already exists':
+      return
+    raise Exception(f"Could not create request access index: {str(e)}")
 
 
 def update_approval_by_access_id(access_id, approval_status):
