@@ -103,9 +103,7 @@ def login_moderator():
     return render_template("mod_login.html")
 
   if request.method == 'POST':
-    if request.form['skip'] == "True" and os.environ['MODE'] == 'DEBUG':
-      return render_template("mod_response.html", message="12345")
-      
+    
     session.pop('mod_number', None)
     pubkey = garden.create_key_from_text(request.form['pubkey'].strip())
     superuser_key = datastore.get_admin_publickey()
@@ -129,11 +127,6 @@ def login_moderator():
 @app.route('/supmod_response', methods=['POST'])
 def code_response():
   approved = False
-
-  if request.form['password'] == "12345" and os.environ['MODE'] == 'DEBUG':
-    approved = True
-    session['is_mod'] = True
-    return redirect("/dashboard")
   
   password = request.form['password'] + "/" + str(session['mod_number'])
   codes = dbsetup.get_active_login_codes()
