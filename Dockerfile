@@ -11,6 +11,5 @@ ENV REDIS_DB=0
 ENV REDIS_USERNAME=changeme
 ENV REDIS_PASSWORD=changeme
 ENV PUBLIC_ACCESS=1
-ENV OTP_KEY=changeme
 ENV APP_KEY=changeme
 CMD ["uv", "run", "server.py", "--run-server"]
