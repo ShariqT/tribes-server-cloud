@@ -98,7 +98,7 @@ def process_admin():
 @app.route("/supmod", methods=['GET', 'POST'])
 def login_moderator():
   if request.method == 'GET':
-    if dbsetup.check_key("firstpw") == 1:
+    if dbsetup.check_key("setup_complete") == 0:
       return redirect("/admin_setup")
     return render_template("mod_login.html")
 
