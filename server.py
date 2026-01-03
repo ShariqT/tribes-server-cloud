@@ -10,6 +10,7 @@ import datastore
 from datastore import messages
 from dotenv import load_dotenv
 import os
+import pyotp
 from utils.dbsetup import setup, firststep, check_key
 load_dotenv()
 
@@ -20,6 +21,7 @@ parser.add_argument('--run-dev-server', action='store_true')
 parser.add_argument('--run-server', action='store_true')
 
 args = parser.parse_args()
+os.environ['OTP_KEY'] = pyotp.random_base32()
 
 if args.show_admin_pw is True:
   firststep()
