@@ -10,15 +10,14 @@ For deploying a server, you can get a managed instance of Redisstack at [Redis.i
 
 ## Docker Image
 You can find the [Docker image](https://hub.docker.com/r/shariqtorres/tribes-python-cloud) in DockerHub. This Docker image has several environment variables that must be set before 
-running a container. These can be found in the `env.example` file for this repo. And just 
-to point out the `OTP_KEY` value **MUST** be a Base32 value. 
+running a container. These can be found in the `.env.example` file for this repo.
 
 If you are running a container for the first time, you will need the admin setup password. 
 You can get this password by running `uv run ./server.py --show-admin-pw`. You will then see
 the password in the docker logs for the container. 
 
 ## Deploying
-You can read about how to [deploy this image on Railway at the Tribes docs website](https://docs.tribes.ltd/guides/deploying-on-railway).
+You can read about how to [deploy this image on Railway at the Tribes docs website](https://docs.tribes.ltd/guides/launch-on-railway/).
 
 ## Tribes Network Client
 You will need to get the Tribes client to be able to visit your newly launched server. Go to [www.tribes.ltd](https://www.tribes.ltd) to get the client. 
