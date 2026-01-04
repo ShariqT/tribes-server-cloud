@@ -2,9 +2,20 @@
 {% block content %}
 <div class="columns">
   <div class="column">
+  <a href="#" id="mdhelp">Help with Markdown</a>
    {% include "components/welcome_form.html" %}
   </div>
 </div>
-
+<script>
+  $mdlink = document.getElementById("mdhelp")
+  $mdlink.addEventListener('click', function(evt){
+    evt.preventDefault();
+    left = window.outerWidth;
+    width = 400;
+    leftpx = left - width;
+    
+    window.open("https://www.markdownguide.org/cheat-sheet/", '', `width=${width},height=800,resizable=yes,left=${leftpx}px`)
+  })
+</script>
 
 {% endblock %}
