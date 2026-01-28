@@ -32,7 +32,8 @@ if args.setup_db is True:
 
 if args.run_dev_server is True:
   os.environ['MODE'] = 'DEBUG'
-  firststep()
+  if len(os.listdir("./skeys")) == 0:
+    firststep()
   subprocess.call(f"flask --app server_src --debug run --port {os.environ['PORT']}", shell=True)
 
 if args.run_server is True:

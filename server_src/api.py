@@ -9,6 +9,7 @@ from datastore import wall
 import os
 from dotenv import load_dotenv
 import markdown
+import utils
 
 load_dotenv()
 clientAPI = Blueprint('clientAPI', __name__)

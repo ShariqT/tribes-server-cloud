@@ -65,7 +65,8 @@ def process_admin():
     keypath = "/var/keys"
     if os.environ['MODE'] == 'DEBUG':
       keypath = "./skeys"
-    utils.generate_keys(request.form['s_username'], request.form['s_email'], keypath)
+    if len(os.listdir(keypath)) == 0:
+      utils.generate_keys(request.form['s_username'], request.form['s_email'], keypath)
   except Exception as e:
     sys.stderr.write(f"Error generating server keys: {str(e)}")
     return render_template("mod_error.html", error="Could not generate the server keys!", backTo="/admin_setup")
